@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mascota Virtual</title>
+
+<style>
+:root {
+    --bg: #eaf7eb;
+    --surface: rgba(245, 255, 245, 0.95);
+    --surface-strong: rgba(255, 255, 255, 0.98);
+    --accent: #2c7a3d;
+    --accent-2: #51b676;
+    --text: #184427;
+    --shadow: 0 24px 60px rgba(17, 58, 32, 0.18);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text);
+    text-align: center;
+    background: radial-gradient(circle at top left, #d8f3dd 0%, var(--bg) 30%, #f4fbf4 100%);
+}
+
+h1 {
+    margin: 1.5rem 0 0.75rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow: 0 2px 6px rgba(51, 93, 46, 0.16);
+}
+
+#contenedor {
+    max-width: 980px;
+    margin: 30px auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 28px;
+    padding: 0 1rem;
+}
+
+#zonaMascota {
+    width: min(100%, 460px);
+    height: 360px;
+    border-radius: 30px;
+    border: 1px solid rgba(76, 134, 79, 0.22);
+    background-image: url("tamagotchi.gif");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center 45%;
+    background-color: #f6fff5;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+#panel {
+    width: min(100%, 360px);
+    text-align: left;
+    background: var(--surface);
+    border-radius: 28px;
+    padding: 26px 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(220, 244, 226, 0.95);
+}
+
+#panel .stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: 20px;
+    background: rgba(237, 252, 238, 0.95);
+    box-shadow: inset 0 1px 4px rgba(53, 95, 61, 0.06);
+    border: 1px solid rgba(191, 233, 193, 0.7);
+}
+
+#panel .stat:last-child {
+    margin-bottom: 0;
+}
+
+#panel .stat span:first-child {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2f5f39;
+}
+
+#panel .stat span:last-child {
+    min-width: 4rem;
+    text-align: right;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #184427;
+}
+
+#objetos {
+    max-width: 980px;
+    margin: 36px auto 60px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px;
+    padding: 0 1rem;
+}
+
+.objeto {
+    width: 100px;
+    padding: 14px;
+    border-radius: 26px;
+    background: rgba(237, 252, 238, 0.96);
+    box-shadow: 0 18px 32px rgba(17, 58, 32, 0.12);
+    transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+    cursor: grab;
+    border: 1px solid rgba(126, 184, 120, 0.4);
+}
+
+.objeto:hover {
+    transform: translateY(-6px);
+    filter: brightness(1.06);
+}
+
+.objeto:active {
+    cursor: grabbing;
+    transform: translateY(-2px) scale(0.98);
+}
+
+@media (max-width: 720px) {
+    #contenedor {
+        gap: 18px;
+    }
+
+    #panel {
+        width: 100%;
+    }
+
+    #panel .stat {
+        flex-wrap: wrap;
+    }
+}
+</style>
+
+<script>
+
+let hambre = 50;
+let sueno = 50;
+let salud = 50;
+let limpio = 50;
+
+/* INICIA EL DRAG */
+function dragstartHandler(ev){
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+/* PERMITE SOLTAR */
+function dragoverHandler(ev){
+    ev.preventDefault();
+}
+
+/* CUANDO SE SUELTA */
+function dropHandler(ev){
+
+    ev.preventDefault();
+
+    const data = ev.dataTransfer.getData("text");
+
+    // obtiene el id de la imagen
+    if(data == "comida" && hambre>0){
+        hambre += 5;
+    }
+    if(data == "cama" && sueno>0){
+        sueno += 20;
+    }
+    if(data == "salud" && salud>0){
+        salud += 30;
+    }
+    if(data == "limpio" && limpio>0){
+        limpio += 25;
+    }
+
+    actualizarLabels();
+    updateLabels();
+    var audio = new Audio('musica.mp4');
+    audio.play();
+}
+
+/* ACTUALIZA TEXTO */
+function actualizarLabels(){
+
+    document.getElementById("lblPorcentajeHambre").innerHTML =
+         hambre + "%";
+    document.getElementById("lblPorcentajeSueno").innerHTML =
+         sueno + "%";
+    document.getElementById("lblPorcentajeSalud").innerHTML =
+         salud + "%";
+    document.getElementById("lblPorcentajeLimpieza").innerHTML =
+         limpio + "%";
+}
+function updateLabels(){
+    if(hambre >= 80){
+        document.getElementById("zonaMascota").style.backgroundImage = "url('triste.gif')";
+    } else if(salud >= 60){
+        document.getElementById("zonaMascota").style.backgroundImage = "url('enferma de vdd.gif')";
+    } else if(sueno >= 75){
+        document.getElementById("zonaMascota").style.backgroundImage = "url('enferma (2).gif')";
+    } else if(limpio >= 60){
+        document.getElementById("zonaMascota").style.backgroundImage = "url('sucio.gif')"; 
+    } else {
+        document.getElementById("zonaMascota").style.backgroundImage = "url('tamagotchi.gif')";
+    } 
+}
+</script>
+
+</head>
+
+<body>
+
+<h1>Mascota Virtual</h1>
+
+<div id="contenedor">
+
+    <!-- DIV GRANDE -->
+    <div id="zonaMascota"
+         ondrop="dropHandler(event)"
+         ondragover="dragoverHandler(event)">
+         
+    </div>
+
+    <!-- LABELS -->
+    <div id="panel">
+        
+        <div class="stat">
+            <span>Hambre</span>
+            <span id="lblPorcentajeHambre">50%</span>
+        </div>
+        <div class="stat">
+            <span>Sueño</span>
+            <span id="lblPorcentajeSueno">50%</span>
+        </div>
+        <div class="stat">
+            <span>Salud</span>
+            <span id="lblPorcentajeSalud">50%</span>
+        </div>
+        <div class="stat">
+            <span>Limpieza</span>
+            <span id="lblPorcentajeLimpieza">50%</span>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- OBJETOS -->
+<div id="objetos">
+
+    <!-- COMIDA -->
+    <img
+        id="comida"
+        class="objeto"
+        src="fresa.png"
+        draggable="true"
+        ondragstart="dragstartHandler(event)"
+    >
+
+    <!-- CAMA -->
+    <img
+        id="cama"
+        class="objeto"
+        src="almohada.png"
+        draggable="true"
+        ondragstart="dragstartHandler(event)"
+    >
+
+    <!-- ENFERMO -->
+    <img
+        id="salud"
+        class="objeto"
+        src="medicina.png"
+        draggable="true"
+        ondragstart="dragstartHandler(event)"
+    >
+
+    <!-- LIMPIEZA -->
+    <img
+        id="limpio"
+        class="objeto"
+        src="jabon.jpg"
+        draggable="true"
+        ondragstart="dragstartHandler(event)"
+    >
+
+</div>
+
+</body>
+</html>
